@@ -1,4 +1,5 @@
 extern crate regex;
+
 use regex::Regex;
 
 use std::fs::File;
@@ -25,6 +26,15 @@ fn main() {
             return;
         }
     };
+
+    let reg = match Regex::new(&pattern) {
+        Ok(reg) => reg,
+        Err(e) => {
+            println!("invalid regexp {}: {}", pattern, e);
+            return;
+        }
+    };
+
     let file = match File::open(&filename) {
         // 成功すれば取り出す。
         Ok(file) => file,
@@ -44,6 +54,9 @@ fn main() {
                 return;
             }
         };
-        println!("{}", line);
+        if reg.is_match(&line) {
+            // 上で参照型で引数に渡したので、ここでも使える
+            println!("{}", line);
+        }
     }
 }
